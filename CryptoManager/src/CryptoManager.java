@@ -73,7 +73,7 @@ public class CryptoManager {
 	
      public static String adjustKeyString(String bellasoStr, String plainText) {
     	 String newKeyString = "";
-    	 while (bellasoStr.length() < plainText.length()) {
+    	 while (bellasoStr.length() < plainText.length()) { 
     		 if (newKeyString.length() + bellasoStr.length() < plainText.length())
     			 newKeyString += bellasoStr; //Continue adding whole String if it fits
     		 else 
@@ -92,7 +92,25 @@ public class CryptoManager {
 	 * @return the encrypted string
 	 */
 	public static String encryptBellaso(String plainText, String bellasoStr) {
-		throw new RuntimeException("method not implemented");
+		String keyString = adjustKeyString(bellasoStr, plainText);
+		char charAtPositionOfPlainText;
+		char charAtPositionOfBellasoStr;
+		char encodedChar;
+		int ASCIICodeWrapped = 0;
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < plainText.length(); i++) {
+			charAtPositionOfPlainText = plainText.charAt(i);
+			charAtPositionOfBellasoStr = keyString.charAt(i); //FIXME might not work
+			encodedChar = (char)(charAtPositionOfPlainText + charAtPositionOfBellasoStr);
+			if (encodedChar >= LOWER_BOUND && encodedChar <= UPPER_BOUND) {
+				sb.append(encodedChar);
+			} else {
+			  ASCIICodeWrapped = adjustASCIICode(encodedChar); //FIXME might not work
+			  sb.append(ASCIICodeWrapped);
+			}
+		}
+		String encryptedString = sb.toString();
+		return encryptedString;
 	}
 	
 	/**

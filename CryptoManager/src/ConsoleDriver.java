@@ -18,6 +18,16 @@ public class ConsoleDriver {
 				String encrypted = CryptoManager.encryptCaesar(word, key);
 				System.out.println(encrypted);
 			}
+			else if (choice1.equals("BELLASO")) {
+				
+				System.out.println("ENTER WORD: ");
+				String word2 =  in.nextLine();
+				System.out.println("ENTER KEY: ");
+				String wordKey = in.nextLine();
+				in.nextLine();
+				String encrypted2 = CryptoManager.encryptBellaso(word2, wordKey);
+				System.out.println(encrypted2);
+			}
 			
 		}
 		else if (choice.equals("DECRYPT")) {
