@@ -15,6 +15,27 @@ public class CryptoManager {
 	public static boolean stringInBounds (String plainText) {
 		throw new RuntimeException("method not implemented");
 	}
+	
+	/**
+	 * This method adjusts codes for characters if they're out
+	 * of LOWER_BOUND or UPPER_BOUND characters
+	 * @param charToWrap character to adjust code for
+	 * @return charcater that is now within the allowed bounds
+	 */
+	private static char adjustASCIICode(char charToWrap) {
+		char wrappedChar = 0;
+		if (charToWrap < LOWER_BOUND) {
+			while (charToWrap < LOWER_BOUND) {
+				wrappedChar = (char) (charToWrap + RANGE);
+			}
+		}
+		else {
+			while (charToWrap > UPPER_BOUND) {
+				wrappedChar = (char) (charToWrap - RANGE);
+			}
+		}
+		return wrappedChar;
+	}
 
 	/**
 	 * Encrypts a string according to the Caesar Cipher.  The integer key specifies an offset
@@ -24,9 +45,44 @@ public class CryptoManager {
 	 * @return the encrypted string
 	 */
 	public static String encryptCaesar(String plainText, int key) {
-		throw new RuntimeException("method not implemented");
+		StringBuilder sb = new StringBuilder();
+		char CharAtPosition;
+		char CharAtPositionEncrypted;
+		int ASCIICodeWrapped = 0;
+		for (int i = 0; i < plainText.length(); i++) {
+			CharAtPosition = plainText.charAt(i);
+			if (CharAtPosition >= LOWER_BOUND && CharAtPosition <= UPPER_BOUND) {
+				CharAtPositionEncrypted = (char) (CharAtPosition + key);
+				sb.append(CharAtPositionEncrypted);
+			}
+			else {
+				 ASCIICodeWrapped = adjustASCIICode(CharAtPosition);
+				 sb.append(ASCIICodeWrapped);
+			}
+		}
+		String encryptedString = sb.toString();
+		return encryptedString;
 	}
 	
+	/**
+	 * Adjusts key String until it matches the length of plainText
+	 * @param String that is used to encrypt plainText
+	 * @param String to encrypt
+	 * @return key string whose length matches the plainText
+	 */
+	
+     public static String adjustKeyString(String bellasoStr, String plainText) {
+    	 String newKeyString = "";
+    	 while (bellasoStr.length() < plainText.length()) {
+    		 if (newKeyString.length() + bellasoStr.length() < plainText.length())
+    			 newKeyString += bellasoStr; //Continue adding whole String if it fits
+    		 else 
+    			 //If you still need to adjust key String but whole does not fit, get a substring.
+    			 newKeyString += bellasoStr.substring(0, plainText.length() - newKeyString.length()); 
+    	 }
+    	 return newKeyString;
+     }
+
 	/**
 	 * Encrypts a string according the Bellaso Cipher.  Each character in plainText is offset 
 	 * according to the ASCII value of the corresponding character in bellasoStr, which is repeated
@@ -48,7 +104,24 @@ public class CryptoManager {
 	 * @return the plain text string
 	 */
 	public static String decryptCaesar(String encryptedText, int key) {
-		throw new RuntimeException("method not implemented");
+		StringBuilder sb = new StringBuilder();
+		char CharAtPosition;
+		char CharAtPositionEncrypted;
+		int ASCIICodeWrapped = 0;
+		for (int i = 0; i < encryptedText.length(); i++) {
+			CharAtPosition = encryptedText.charAt(i);
+			if (CharAtPosition >= LOWER_BOUND && CharAtPosition <= UPPER_BOUND) {
+				CharAtPositionEncrypted = (char) (CharAtPosition - key);
+				sb.append(CharAtPositionEncrypted);
+			}
+			else {
+				 ASCIICodeWrapped = adjustASCIICode(CharAtPosition);
+				 sb.append(ASCIICodeWrapped);
+			}
+		}
+		String encryptedString = sb.toString();
+		return encryptedString;
+		
 	}
 	
 	/**
