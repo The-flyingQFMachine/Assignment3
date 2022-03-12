@@ -13,25 +13,33 @@ public class CryptoManager {
 	 * @return true if all characters are within the allowable bounds, false if any character is outside
 	 */
 	public static boolean stringInBounds (String plainText) {
-		throw new RuntimeException("method not implemented");
+		boolean inBounds = true;
+		for (int i = 0; i < plainText.length(); i++) {
+			if (plainText.charAt(i) < LOWER_BOUND || plainText.charAt(i) > UPPER_BOUND) {
+				inBounds = false;
+			}
+		}
+		return inBounds;
 	}
 	
 	/**
 	 * This method adjusts codes for characters if they're out
-	 * of LOWER_BOUND or UPPER_BOUND characters
-	 * @param charToWrap character to adjust code for
-	 * @return charcater that is now within the allowed bounds
+	 * of LOWER_BOUND or UPPER_BOUND characters.
+	 * @param charToWrap character to adjust ASCII code for
+	 * @return wrappedChar that is now within the allowed bounds
 	 */
 	private static char adjustASCIICode(char charToWrap) {
 		char wrappedChar = 0;
 		if (charToWrap < LOWER_BOUND) {
 			while (charToWrap < LOWER_BOUND) {
 				wrappedChar = (char) (charToWrap + RANGE);
+				charToWrap = wrappedChar;
 			}
 		}
 		else {
 			while (charToWrap > UPPER_BOUND) {
 				wrappedChar = (char) (charToWrap - RANGE);
+				charToWrap = wrappedChar;
 			}
 		}
 		return wrappedChar;
@@ -46,41 +54,47 @@ public class CryptoManager {
 	 */
 	public static String encryptCaesar(String plainText, int key) {
 		StringBuilder sb = new StringBuilder();
-		char CharAtPosition;
-		char CharAtPositionEncrypted;
-		int ASCIICodeWrapped = 0;
+		char charAtPosition;
+		char charAtPositionEncrypted;
+		int ASCIICodeWrapped;
+		//If String is outside of allowable bounds, throw an exception and terminate.
+		if (!stringInBounds(plainText))
+			throw new RuntimeException("The program failed because a character inside the string is " +
+					"outside of allowed range.");
 		for (int i = 0; i < plainText.length(); i++) {
-			CharAtPosition = plainText.charAt(i);
-			if (CharAtPosition >= LOWER_BOUND && CharAtPosition <= UPPER_BOUND) {
-				CharAtPositionEncrypted = (char) (CharAtPosition + key);
-				sb.append(CharAtPositionEncrypted);
+			charAtPosition = plainText.charAt(i);
+			if (charAtPosition >= LOWER_BOUND && charAtPosition <= UPPER_BOUND) {
+				charAtPositionEncrypted = (char) (charAtPosition + key);
+				sb.append(charAtPositionEncrypted);
 			}
 			else {
-				 ASCIICodeWrapped = adjustASCIICode(CharAtPosition);
-				 sb.append(ASCIICodeWrapped);
+				 ASCIICodeWrapped = adjustASCIICode(charAtPosition);
+				 sb.append((char)ASCIICodeWrapped);
 			}
 		}
-		String encryptedString = sb.toString();
-		return encryptedString;
+		return sb.toString();
 	}
 	
 	/**
-	 * Adjusts key String until it matches the length of plainText
-	 * @param String that is used to encrypt plainText
-	 * @param String to encrypt
+	 * Keeps adjusting Key String until it matches the length of plainText
+	 * @param keyString that is used to encrypt plainText in Bellaso Cipher.
+	 * @param requiredLength the length of the plainText
 	 * @return key string whose length matches the plainText
 	 */
 	
-     public static String adjustKeyString(String bellasoStr, String plainText) {
-    	 String newKeyString = "";
-    	 while (bellasoStr.length() < plainText.length()) { 
-    		 if (newKeyString.length() + bellasoStr.length() < plainText.length())
-    			 newKeyString += bellasoStr; //Continue adding whole String if it fits
+     public static String adjustKeyString(String keyString, int requiredLength) {
+    	 StringBuilder newKeyString = new StringBuilder();
+    	 if (keyString.length() == requiredLength)
+    	 	return keyString;
+
+    	 while (newKeyString.length() < requiredLength) {
+    		 if (newKeyString.length() + keyString.length() < requiredLength)
+    			 newKeyString.append(keyString); //Continue adding whole String if it fits
     		 else 
     			 //If you still need to adjust key String but whole does not fit, get a substring.
-    			 newKeyString += bellasoStr.substring(0, plainText.length() - newKeyString.length()); 
+    			 newKeyString.append(keyString.substring(0, requiredLength - newKeyString.length()));
     	 }
-    	 return newKeyString;
+    	 return newKeyString.toString();
      }
 
 	/**
@@ -92,25 +106,29 @@ public class CryptoManager {
 	 * @return the encrypted string
 	 */
 	public static String encryptBellaso(String plainText, String bellasoStr) {
-		String keyString = adjustKeyString(bellasoStr, plainText);
+		String keyString = adjustKeyString(bellasoStr, plainText.length());
 		char charAtPositionOfPlainText;
 		char charAtPositionOfBellasoStr;
 		char encodedChar;
 		int ASCIICodeWrapped = 0;
 		StringBuilder sb = new StringBuilder();
+		//If String is outside of allowable bounds, throw an exception and terminate.
+		if (!stringInBounds(plainText))
+			throw new RuntimeException("The program failed because a character inside the string is " +
+					"outside of allowed range.");
 		for (int i = 0; i < plainText.length(); i++) {
 			charAtPositionOfPlainText = plainText.charAt(i);
-			charAtPositionOfBellasoStr = keyString.charAt(i); //FIXME might not work
+			charAtPositionOfBellasoStr = keyString.charAt(i);
+			//Encrypted character.
 			encodedChar = (char)(charAtPositionOfPlainText + charAtPositionOfBellasoStr);
 			if (encodedChar >= LOWER_BOUND && encodedChar <= UPPER_BOUND) {
 				sb.append(encodedChar);
 			} else {
-			  ASCIICodeWrapped = adjustASCIICode(encodedChar); //FIXME might not work
-			  sb.append(ASCIICodeWrapped);
+				ASCIICodeWrapped = adjustASCIICode(encodedChar);
+			    sb.append((char)ASCIICodeWrapped);
 			}
 		}
-		String encryptedString = sb.toString();
-		return encryptedString;
+		return sb.toString();
 	}
 	
 	/**
@@ -124,22 +142,20 @@ public class CryptoManager {
 	public static String decryptCaesar(String encryptedText, int key) {
 		StringBuilder sb = new StringBuilder();
 		char CharAtPosition;
-		char CharAtPositionEncrypted;
+		char CharAtPositionDecrypted;
 		int ASCIICodeWrapped = 0;
 		for (int i = 0; i < encryptedText.length(); i++) {
 			CharAtPosition = encryptedText.charAt(i);
 			if (CharAtPosition >= LOWER_BOUND && CharAtPosition <= UPPER_BOUND) {
-				CharAtPositionEncrypted = (char) (CharAtPosition - key);
-				sb.append(CharAtPositionEncrypted);
+				CharAtPositionDecrypted = (char) (CharAtPosition - key);
+				sb.append(CharAtPositionDecrypted);
 			}
 			else {
 				 ASCIICodeWrapped = adjustASCIICode(CharAtPosition);
-				 sb.append(ASCIICodeWrapped);
+				 sb.append((char)ASCIICodeWrapped);
 			}
 		}
-		String encryptedString = sb.toString();
-		return encryptedString;
-		
+		return sb.toString();
 	}
 	
 	/**
@@ -151,6 +167,24 @@ public class CryptoManager {
 	 * @return the decrypted string
 	 */
 	public static String decryptBellaso(String encryptedText, String bellasoStr) {
-		throw new RuntimeException("method not implemented");
+		String keyString = adjustKeyString(bellasoStr, encryptedText.length());
+		char charAtPositionOfEncryptedText;
+		char charAtPositionOfBellasoStr;
+		char decodedChar;
+		int ASCIICodeWrapped;
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < encryptedText.length(); i++) {
+			charAtPositionOfEncryptedText = encryptedText.charAt(i);
+			charAtPositionOfBellasoStr = keyString.charAt(i);
+			//Encrypted character.
+			decodedChar = (char)(charAtPositionOfEncryptedText - charAtPositionOfBellasoStr);
+			if (decodedChar >= LOWER_BOUND && decodedChar <= UPPER_BOUND) {
+				sb.append(decodedChar);
+			} else {
+				ASCIICodeWrapped = adjustASCIICode(decodedChar);
+				sb.append((char)ASCIICodeWrapped);
+			}
+		}
+		return sb.toString();
 	}
 }

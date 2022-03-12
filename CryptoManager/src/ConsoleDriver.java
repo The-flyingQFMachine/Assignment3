@@ -24,7 +24,7 @@ public class ConsoleDriver {
 				String word2 =  in.nextLine();
 				System.out.println("ENTER KEY: ");
 				String wordKey = in.nextLine();
-				in.nextLine();
+				//in.nextLine();
 				String encrypted2 = CryptoManager.encryptBellaso(word2, wordKey);
 				System.out.println(encrypted2);
 			}
@@ -39,6 +39,14 @@ public class ConsoleDriver {
 				System.out.println("ENTER KEY: ");
 				int key =  in.nextInt();
 				String decrypted = CryptoManager.decryptCaesar(word, key);
+				System.out.println(decrypted);
+			}
+			else if (choice3.equals("BELLASO")) {
+				System.out.println("ENTER WORD: ");
+				String encryptedWord =  in.nextLine();
+				System.out.println("ENTER KEY: ");
+				String keyText =  in.nextLine();
+				String decrypted = CryptoManager.decryptBellaso(encryptedWord, keyText);
 				System.out.println(decrypted);
 			}
 		}
