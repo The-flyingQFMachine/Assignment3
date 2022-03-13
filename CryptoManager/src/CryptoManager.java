@@ -63,12 +63,12 @@ public class CryptoManager {
 					"outside of allowed range.");
 		for (int i = 0; i < plainText.length(); i++) {
 			charAtPosition = plainText.charAt(i);
-			if (charAtPosition >= LOWER_BOUND && charAtPosition <= UPPER_BOUND) {
-				charAtPositionEncrypted = (char) (charAtPosition + key);
+			charAtPositionEncrypted = (char) (charAtPosition + key);
+			if ( charAtPositionEncrypted >= LOWER_BOUND && charAtPositionEncrypted <= UPPER_BOUND) {
 				sb.append(charAtPositionEncrypted);
 			}
 			else {
-				 ASCIICodeWrapped = adjustASCIICode(charAtPosition);
+				 ASCIICodeWrapped = adjustASCIICode(charAtPositionEncrypted);
 				 sb.append((char)ASCIICodeWrapped);
 			}
 		}
@@ -146,12 +146,13 @@ public class CryptoManager {
 		int ASCIICodeWrapped = 0;
 		for (int i = 0; i < encryptedText.length(); i++) {
 			CharAtPosition = encryptedText.charAt(i);
-			if (CharAtPosition >= LOWER_BOUND && CharAtPosition <= UPPER_BOUND) {
-				CharAtPositionDecrypted = (char) (CharAtPosition - key);
+			CharAtPositionDecrypted = (char) (CharAtPosition - key);
+			if (CharAtPositionDecrypted >= LOWER_BOUND && CharAtPositionDecrypted <= UPPER_BOUND) {
+				//CharAtPositionDecrypted = (char) (CharAtPosition - key);
 				sb.append(CharAtPositionDecrypted);
 			}
 			else {
-				 ASCIICodeWrapped = adjustASCIICode(CharAtPosition);
+				 ASCIICodeWrapped = adjustASCIICode(CharAtPositionDecrypted);
 				 sb.append((char)ASCIICodeWrapped);
 			}
 		}
